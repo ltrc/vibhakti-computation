@@ -5,7 +5,7 @@ use lib __DIR__ . "/API";
 use Getopt::Long;
 use vibhakticompute;
 
-GetOptions("help!"=>\$help,"input=s"=>\$input,"output=s",\$output);
+GetOptions("help!"=>\$help,"input=s"=>\$input,"output=s",\$output, "keep"=>\$keep);
 print "Unprocessed by Getopt::Long\n" if $ARGV[0];
 foreach (@ARGV) {
 	print "$_\n";
@@ -25,4 +25,4 @@ if ($input eq "")
   $input="/dev/stdin";
 }
 
-vibhakticompute($input, $output);
+vibhakticompute($input, $keep, $output);

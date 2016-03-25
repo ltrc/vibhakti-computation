@@ -8,6 +8,7 @@ our @EXPORT = qw(vibhakticompute);
 sub ComputeTAM
 {
 	my $sent=@_[0];
+        my $keep = $_[1];
 
 	my @uns_VG_nodes = get_nodes(3,"VGF",$sent);	#get all the VG nodes
 	my @VGINF_nodes = get_nodes(3,"VGINF",$sent);	#get all the VG nodes
@@ -271,15 +272,17 @@ sub ComputeTAM
 		delete @per[0..$#remove];
 		delete @gen[0..$#remove];
 	}
-	my @sort_remove=sort{$a <=> $b} @remove;
-	my $delete=0;
-	foreach (@sort_remove)
-	{	
-		delete_node($_-$delete,$sent);
-		$delete++;
-	}
-	delete @remove[0..$#remove];
-	delete @sort_remove[0..$#remove];
+        if (not defined $keep) {
+            my @sort_remove=sort{$a <=> $b} @remove;
+            my $delete=0;
+            foreach (@sort_remove)
+            {
+                delete_node($_-$delete,$sent);
+                $delete++;
+            }
+            delete @remove[0..$#remove];
+            delete @sort_remove[0..$#remove];
+        }
 
 	#print "after vib comp--\n";
 	#print_tree();
@@ -291,6 +294,7 @@ sub ComputeTAM
 sub ComputeVibhakti
 {
 	my $sent=@_[0];
+        my $keep = $_[1];
 
 	#my $delete;	#keeps count of all the deleted node, helps in locating node obtained before deletion.
 
@@ -427,18 +431,20 @@ sub ComputeVibhakti
 				undef $new_string;
 			}
 	}
-        #Deletes the leaves containing vibhakti.
-	$delete=0;
-	foreach (@remove)
-	{
-		delete_node($_-$delete,$sent);
-		$delete++;
-	}
-	delete @remove[0..$#remove];
+        if (not defined $keep) {
+            #Deletes the leaves containing vibhakti.
+            $delete=0;
+            foreach (@remove)
+            {
+                delete_node($_-$delete,$sent);
+                $delete++;
+            }
+            delete @remove[0..$#remove];
+        }
 }
 
 sub vibhakticompute {
-    my ($input, $output) = @_;
+    my ($input, $keep, $output) = @_;
 
     read_story($input);
 
@@ -472,10 +478,10 @@ sub vibhakticompute {
                 my($sent) = get_sent($para,$j);
 
                 #copy vibhakti info
-                ComputeVibhakti($sent);
+                ComputeVibhakti($sent, $keep);
 
                 #compute tam
-                ComputeTAM($sent);
+                ComputeTAM($sent, $keep);
             }
         }
     }
